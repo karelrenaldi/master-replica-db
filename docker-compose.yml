@@ -1,0 +1,36 @@
+version: '3'
+services:
+  pg_master:
+    image: karel/pg-master
+    build: ./master
+    ports:
+      - '5433:5432'
+    volumes:
+      - 'postgre_data:/var/lib/postgresql/data'
+    environment:
+      - POSTGRES_USER=bayun
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=default
+      - PG_REP_USER=replicas
+      - PG_REP_PASSWORD=123456
+    networks:
+      default:
+        aliases:
+          - pg_cluster
+  pg_slave:
+    image: karel/pg-slave
+    build: ./slave
+    ports:
+      - '5434:5432'
+    environment:
+      - POSTGRES_USER=bayun
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=default
+      - PG_REP_USER=replicas
+      - PG_REP_PASSWORD=123456
+    networks:
+      default:
+        aliases:
+          - pg_cluster
+volumes:
+  postgre_data:
